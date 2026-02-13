@@ -1,0 +1,57 @@
+# Vera Guardrails Configuration
+# This file defines safety boundaries for the Vera AI orchestrator.
+# Loaded on daemon startup from this GitHub repo.
+
+version: "1"
+
+forbidden:
+  - pattern: "rm -rf /"
+    description: "Prevent recursive deletion of root"
+    severity: block
+  - pattern: "DROP TABLE"
+    description: "Prevent database table deletion"
+    severity: block
+  - pattern: "DROP DATABASE"
+    description: "Prevent database deletion"
+    severity: block
+  - pattern: "format c:"
+    description: "Prevent disk formatting"
+    severity: block
+  - pattern: "mkfs"
+    description: "Prevent filesystem creation on existing devices"
+    severity: block
+  - pattern: ":(){ :|:& };:"
+    description: "Prevent fork bomb"
+    severity: block
+
+escalate_to_human:
+  - pattern: "deploy to production"
+    description: "Production deployments require CEO approval"
+    requiresApproval: true
+  - pattern: "cost_exceeds_threshold"
+    description: "Cost threshold exceeded"
+    requiresApproval: true
+  - pattern: "delete repository"
+    description: "Repository deletion requires human approval"
+    requiresApproval: true
+  - pattern: "modify permissions"
+    description: "Permission changes require human approval"
+    requiresApproval: true
+
+autonomous:
+  - pattern: "run tests"
+    description: "Test execution is always autonomous"
+  - pattern: "lint"
+    description: "Linting is always autonomous"
+  - pattern: "build"
+    description: "Build operations are always autonomous"
+  - pattern: "format code"
+    description: "Code formatting is always autonomous"
+
+cost_thresholds:
+  perObjective: 5.00
+  perDay: 25.00
+
+worker_constraints:
+  timeoutMs: 1800000
+  maxRetries: 2
